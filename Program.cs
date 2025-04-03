@@ -17,6 +17,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddScoped<ICarRepository, CarRepository>();
 builder.Services.AddScoped<IDriverRepository, DriverRepository>();
+builder.Services.AddScoped<IRentalRepository, RentalRepository>();
 
 var app = builder.Build();
 
@@ -30,6 +31,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapDriverEndpoints()
-    .MapCarEndpoints();
+    .MapCarEndpoints()
+    .MapRentalEndpoints();
 
 app.Run();

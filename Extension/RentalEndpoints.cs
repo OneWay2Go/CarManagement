@@ -1,4 +1,6 @@
-﻿using piyoz.uz.DataAccess.Repositories;
+﻿using Microsoft.AspNetCore.Mvc;
+using piyoz.uz.DataAccess.Entities;
+using piyoz.uz.DataAccess.Repositories;
 using piyoz.uz.Dtos;
 using piyoz.uz.Maps;
 using System.Reflection;
@@ -23,7 +25,15 @@ namespace piyoz.uz.Extension
                 var rentalMapper = new RentalMapper();
                 var rentalsDto = rentalMapper.RentalListToRentalDtoList(paginatedRentals);
 
-                return Results.Ok(rentalsDto);
+                var paginatedDate = new PaginatedData<RentalDto>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = rentals.Count,
+                    Data = rentalsDto
+                };
+
+                return Results.Ok(paginatedDate);
             });
 
             // get all (filtering)
