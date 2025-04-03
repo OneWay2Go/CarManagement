@@ -8,5 +8,7 @@ namespace piyoz.uz.DataAccess
         public DbSet<Car> Cars { get; set; }
 
         public DbSet<Driver> Drivers { get; set; }
+
+        public DbSet<Rental> Rentals { get; set; }
     }
 }

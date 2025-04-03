@@ -4,12 +4,14 @@
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string Make { get; set; } = default!;
 
-        public CarBrand Brand { get; set; }
+        public string Model { get; set; } = default!;
 
-        public decimal Price { get; set; }
+        public int Year { get; set; }
 
-        public int ManufacturedYear { get; set; }
+        public decimal DailyRate { get; set; }
+        
+        public bool IsAvailable { get; set; }
     }
 }
