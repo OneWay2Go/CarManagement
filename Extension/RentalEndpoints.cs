@@ -10,12 +10,41 @@ namespace piyoz.uz.Extension
         public static IEndpointRouteBuilder MapRentalEndpoints(this IEndpointRouteBuilder app)
         {
             // Rental minimal api
-            // get all
-            app.MapGet("/rentals", async (IRentalRepository rentalRepository) =>
+            // get all (pagination)
+            app.MapGet("/rentals", async (int pageSize, int pageNumber, IRentalRepository rentalRepository) =>
             {
                 var rentals = await rentalRepository.GetAll();
+
+                var paginatedRentals = rentals
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
                 var rentalMapper = new RentalMapper();
-                var rentalsDto = rentalMapper.RentalListToRentalDtoList(rentals);
+                var rentalsDto = rentalMapper.RentalListToRentalDtoList(paginatedRentals);
+
+                return Results.Ok(rentalsDto);
+            });
+
+            // get all (filtering)
+            app.MapGet("/rentals/search", async (string? searchBy, string? searchKey, IRentalRepository rentalRepository) =>
+            {
+                var rentals = await rentalRepository.GetAll();
+
+                if (string.IsNullOrEmpty(searchBy) && string.IsNullOrEmpty(searchKey))
+                {
+                    var mapper = new RentalMapper();
+                    var dtos = mapper.RentalListToRentalDtoList(rentals);
+
+                    return Results.Ok(dtos);
+                }
+
+                var filteredRentals = rentals
+                    .Where(r => r.GetType().GetProperty(searchBy).GetValue(r).ToString().Contains(searchKey)).ToList();
+
+                var rentalMapper = new RentalMapper();
+                var rentalsDto = rentalMapper.RentalListToRentalDtoList(filteredRentals);
+
                 return Results.Ok(rentalsDto);
             });
 
@@ -23,12 +52,15 @@ namespace piyoz.uz.Extension
             app.MapGet("/rentals/{id}", async (int id, IRentalRepository rentalRepository) =>
             {
                 var rental = await rentalRepository.GetById(id);
+
                 if (rental is null)
                 {
                     return Results.NotFound();
                 }
+
                 var rentalMapper = new RentalMapper();
                 var rentalDto = rentalMapper.RentalToRentalDto(rental);
+
                 return Results.Ok(rentalDto);
             });
 
